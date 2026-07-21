@@ -1,0 +1,6 @@
+# Verified against the actual execution environment used to generate every
+# table, figure, and CSV in this repository (Python 3.12.3).
+# Install with: pip install -r requirements.txt
+numpy==2.4.4
+scipy==1.17.1
+matplotlib==3.10.8
