@@ -1,0 +1,59 @@
+name: Reproducibility check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Ensure output folders exist
+        run: mkdir -p data_csv figures
+
+      - name: Solver validation (Table 2)
+        run: python3 logderiv_ref.py
+
+      - name: WKB error check (Table 3)
+        run: python3 wkb_perturbation_test.py
+
+      - name: Table 4 -- semiclassical correlations
+        run: python3 physical_correlation_test.py
+
+      - name: Table 4 -- phase-shift correlations
+        run: python3 phase_shift_test.py
+
+      - name: Table 4 -- Jost-magnitude correlations
+        run: python3 jost_and_curvature_test.py
+
+      - name: Table 4 -- composite chi constancy check
+        run: python3 composite_chi_test.py
+
+      - name: Figure 4 canonical data + plot
+        run: |
+          python3 figure4_canonical.py
+          python3 fig4_from_csv.py
+
+      - name: Figure 8 (correlation map) from CSV
+        run: python3 fig8_from_csv.py
+
+      - name: Upload generated CSVs and figures as build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: reproducibility-outputs
+          path: |
+            data_csv/
+            figures/*.png
