@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it using the metadata below."
+type: software
+title: "Numerical Scaling Collapse and Systematic Exclusion Analysis for Localized EFCL Corrections in Quantum Tunneling"
+version: 1.0.0
+date-released: 2026-07-25
+authors:
+  - family-names: "Al-Shtaiwi"
+    given-names: "Ibrahim Ramadan"
+    affiliation: "Independent Researcher, Libya"
+repository-code: "https://github.com/ibrhimrmden-eng/EFCL-Quantum-Tunneling"
+url: "https://github.com/ibrhimrmden-eng/EFCL-Quantum-Tunneling"
+license: "MIT"
+keywords:
+  - quantum tunneling
+  - WKB approximation
+  - scaling collapse
+  - numerical reproducibility
+  - log-derivative method
+  - Riccati equation
+  - EFCL
+abstract: >
+  Numerically exact investigation of a proposed environment-dependent
+  correction (EFCL) to one-dimensional quantum tunneling through a
+  smooth potential barrier, using a validated logarithmic-derivative
+  (Riccati) solver. Reports a robust numerical scaling collapse in the
+  coupling-suppression relationship and a systematic exclusion analysis
+  of eleven candidate first-order semiclassical and single-channel
+  scattering observables as explanations for the underlying critical
+  scale lambda*(E).
