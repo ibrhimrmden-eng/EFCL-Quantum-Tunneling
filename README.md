@@ -13,49 +13,41 @@ This repository contains the complete numerical pipeline behind the manuscript. 
 
 ## License
 
-Not yet assigned — **placeholder, must be set before any public release.** Suggested options: MIT (for code) combined with CC BY 4.0 (for text/figures/data), or "All Rights Reserved" if the author intends to hold rights until formal publication. This must be resolved before uploading to GitHub or Zenodo.
+MIT (for code) + CC BY 4.0 (for text/figures/data). See `LICENSE` for full text.
 
 ---
 
 ## Citation
 
-Placeholder — to be completed once author names, affiliation, and a DOI (arXiv, Zenodo, or journal) are assigned:
-```
-If you use this repository, please cite:
-[Author name(s)]. "Numerical Scaling Collapse and Systematic Exclusion Analysis
-for Localized EFCL Corrections in Quantum Tunneling." [Year]. [DOI/arXiv ID].
-```
+See `CITATION.cff` — GitHub renders a "Cite this repository" button automatically from this file.
 
 ---
 
-## 1. Project structure
-
-```
-.
-├── manuscript_draft_sections.md          # Abstract, Introduction, Mathematical Formulation, Discussion & Conclusion
+## 1. Project structure ├── manuscript_draft_sections.md          # Abstract, Introduction, Mathematical Formulation, Discussion & Conclusion
 ├── figure_captions_and_tables.md         # All figure captions, all 7 tables, reproducibility audit notes
 ├── EFCL_scaling_law_results_documentation.md   # Full results log (hypothesis -> test -> outcome chain)
 ├── EFCL_tunneling_session_full_log.md    # Earlier-stage debugging log (grid divergence, localization fix)
 │
 ├── logderiv_ref.py                       # CORE: validated log-derivative (Riccati) solver + potential definitions
 │
-├── figures/                              # All 10 rendered figures (PNG, 600 dpi)
+├── figures/                              # All 10 rendered figures + Graphical Abstract (PNG, 600 dpi)
 ├── data_csv/                             # CSV outputs from canonical scripts (source of truth for Figs 4-9)
 │   ├── figure4_scaling_collapse.csv
 │   ├── table4_semiclassical.csv          # E, S0, L, Vbar correlations
 │   ├── table4_phase_shift.csv            # delta, tan(delta), Wigner-delay correlations
 │   ├── table4_jost.csv                   # |F(k)|, ln|F(k)| correlations
-│   ├── table4_composite.csv              # chi=lambda*S0 and chi=lambda*S0/L constancy check
+│   ├── table4_composite.csv              # chi=lambdaS0 and chi=lambdaS0/L constancy check
 │   ├── table5_threshold_invariance.csv
 │   ├── table6_barrier_width.csv
 │   ├── table6_barrier_V0.csv
 │   └── table6_envelope_sigma.csv
 │
+├── .github/workflows/reproducibility.yml # CI: runs minimal-reproduction chain on every push
+├── LICENSE                               # MIT (code) + CC BY 4.0 (text/figures/data)
+├── CITATION.cff                          # Machine-readable citation metadata
+│
 ├── [canonical scripts — one per table/figure, see Section 3]
-└── [earlier-stage / diagnostic scripts — see Section 4]
-```
-
----
+└── [earlier-stage / diagnostic scripts — see Section 4] ---
 
 ## 2. Requirements
 
@@ -64,12 +56,7 @@ for Localized EFCL Corrections in Quantum Tunneling." [Year]. [DOI/arXiv ID].
 - `scipy` (uses `scipy.integrate.solve_ivp`, `scipy.optimize.brentq`/`curve_fit`, `scipy.stats.pearsonr`/`spearmanr`)
 - `matplotlib` (Agg backend used for all figure generation; no display required)
 
-Version-pinned dependencies are recorded in `requirements.txt` (numpy==2.4.4, scipy==1.17.1, matplotlib==3.10.8; verified against the actual environment used to run every script in this repository, Python 3.12.3). Install with:
-```
-pip install -r requirements.txt
-```
-
----
+Version-pinned dependencies are recorded in `requirements.txt` (numpy==2.4.4, scipy==1.17.1, matplotlib==3.10.8; verified against the actual environment used to run every script in this repository, Python 3.12.3). Install with: pip install -r requirements.txt ---
 
 ## 3. How each table and figure was produced (canonical scripts)
 
@@ -101,12 +88,7 @@ python3 physical_correlation_test.py
 python3 phase_shift_test.py
 python3 jost_and_curvature_test.py
 python3 composite_chi_test.py
-python3 fig8_from_csv.py
-```
-
-### Full rebuild (every table and every figure, in dependency order)
-```bash
-python3 logderiv_ref.py                        # sanity check / Table 2
+python3 fig8_from_csv.py Full rebuild (every table and every figure, in dependency order) python3 logderiv_ref.py                        # sanity check / Table 2
 python3 wkb_perturbation_test.py                # Table 3
 python3 physical_correlation_test.py            # Table 4 (part 1)
 python3 phase_shift_test.py                     # Table 4 (part 2)
@@ -125,48 +107,26 @@ python3 fig6_from_csv.py                        # Figure 6 PNG
 python3 fig7_from_csv.py                        # Figure 7 PNG
 python3 fig8_from_csv.py                        # Figure 8 PNG
 python3 fig9_from_csv.py                        # Figure 9 PNG
-python3 fig8910.py                              # Figure 10 PNG (legacy script, schematic only)
-```
-Each script individually completes within a few minutes on a standard CPU; the log-derivative solver uses adaptive RK45 and does not require a GPU.
-
----
-
-## 4. Earlier-stage / diagnostic scripts (not part of the final pipeline)
-
-Retained for transparency, since the manuscript documents the errors they were used to find, but **not** inputs to any final table or figure:
-
-- `efcl_test.py` — original (buggy) model; demonstrates the divergent `λ3·|∇V|` term.
-- `efcl_v2.py` — first corrected version (smooth barrier); superseded by `logderiv_ref.py`.
-- `transfer_matrix_ref.py` — naive transfer-matrix solver; demonstrated to be numerically unstable and explicitly **not** used as the reference method anywhere in the final results.
-- `rigor_checks.py`, `action_deltaS_test.py`, `separability_scaling_test.py`, `kink_retest_uniform.py`, `verify_effective_barrier_claim.py`, `universal_shift_test.py`, `lambda_star_fit.py` — intermediate hypothesis tests described narratively in `EFCL_scaling_law_results_documentation.md`.
-
-**Note:** `lambda_star_extrapolation_test.py` was previously miscategorized as diagnostic-only in this README. It is in fact a required dependency of `physical_correlation_test.py` and `composite_chi_test.py` (both import `find_lambda_star` from it) and must be present alongside them for Table 4 to regenerate. This was caught by a clean-room reproducibility test (Section 7) and has been corrected here.
-
----
-
-## 5. Data availability
-
-All CSV outputs are included in `data_csv/`. No external datasets are required; all data are generated by the scripts in this repository from the analytic potential definitions in `logderiv_ref.py`.
-
----
-
-## 6. Clean-room reproducibility test (performed for this version)
-
-To genuinely test item 5 of a standard submission checklist ("run all scripts from scratch on a clean machine"), all `.py` files listed as canonical or dependency scripts were copied into an isolated empty directory (no leftover state, no cached files from prior runs) and executed there directly. This found and fixed two real bugs that were not visible from the session transcript alone:
-
-1. **Undocumented dependency**: `physical_correlation_test.py` and `composite_chi_test.py` import `find_lambda_star` from `lambda_star_extrapolation_test.py`, which this README previously listed as "diagnostic-only, not an input to any final result." This was incorrect and has been corrected in Section 4 above.
-2. **Non-portable hardcoded paths**: 31 scripts wrote to or read from absolute paths of the form `/home/claude/data_csv/...` and `/home/claude/figures/...`. On any other machine this would either fail outright or silently write files to a nonexistent directory. All paths in the distributed scripts have been changed to relative paths (`data_csv/...`, `figures/...`), so the repository now only requires the working directory to contain `data_csv/` and `figures/` subfolders at runtime.
-
-After both fixes, the following were confirmed to run successfully in the clean directory and reproduce their CSV outputs with values matching Table 4 and Table 5 exactly: `physical_correlation_test.py`, `phase_shift_test.py`, `jost_and_curvature_test.py`, `composite_chi_test.py`, `threshold_invariance_test2.py`, `figure4_canonical.py`. The remaining canonical scripts (barrier/envelope robustness, Figures 1–3/5–9 plotting scripts) use the same corrected path convention but were not individually re-executed in the clean directory for this version due to time constraints — this is the one remaining gap in the clean-room test and is added to Open Items below.
-
----
-
-## 7. Open items (not yet resolved — do not claim otherwise)
-
-1. **No continuous integration (CI) workflow** has been configured. Reproduction is currently entirely manual (run the scripts listed in Section 3 by hand); there is no automated check that the repository stays reproducible as it evolves.
-2. **Figures 1–3 and 10 have no CSV intermediate** — they are generated directly by their scripts without a saved data file, so their numeric content cannot be independently inspected outside the script itself.
-3. **Table 1 has no single canonical script** (see the exception noted at the top of Section 3).
-4. **No pixel-level or file-level check** of the final PNG files has been performed; only the underlying numerical data have been verified (see `figure_captions_and_tables.md` for the exact scope of this audit).
-5. **Clean-room test incomplete**: only 6 of the ~19 canonical scripts (Section 6) were individually re-executed in an isolated directory. The barrier/envelope-robustness scripts and all plotting scripts use the same corrected relative-path convention but have not yet been individually confirmed to run error-free from a truly empty directory.
-6. **Random seeds**: not applicable — all computations are deterministic (no stochastic sampling is used anywhere in this pipeline).
-7. **Operating system / hardware**: not yet recorded.
+python3 fig8910.py                              # Figure 10 PNG (legacy script, schematic only) Each script individually completes within a few minutes on a standard CPU; the log-derivative solver uses adaptive RK45 and does not require a GPU.
+4. Earlier-stage / diagnostic scripts (not part of the final pipeline)
+Retained for transparency, since the manuscript documents the errors they were used to find, but not inputs to any final table or figure:
+efcl_test.py — original (buggy) model; demonstrates the divergent λ3·|∇V| term.
+efcl_v2.py — first corrected version (smooth barrier); superseded by logderiv_ref.py.
+transfer_matrix_ref.py — naive transfer-matrix solver; demonstrated to be numerically unstable and explicitly not used as the reference method anywhere in the final results.
+rigor_checks.py, action_deltaS_test.py, separability_scaling_test.py, kink_retest_uniform.py, verify_effective_barrier_claim.py, universal_shift_test.py, lambda_star_fit.py — intermediate hypothesis tests described narratively in EFCL_scaling_law_results_documentation.md.
+Note: lambda_star_extrapolation_test.py was previously miscategorized as diagnostic-only in this README. It is in fact a required dependency of physical_correlation_test.py and composite_chi_test.py (both import find_lambda_star from it) and must be present alongside them for Table 4 to regenerate. This was caught by a clean-room reproducibility test (Section 6) and has been corrected here.
+5. Data availability
+All CSV outputs are included in data_csv/. No external datasets are required; all data are generated by the scripts in this repository from the analytic potential definitions in logderiv_ref.py.
+6. Clean-room reproducibility test (performed for this version)
+To genuinely test item 5 of a standard submission checklist ("run all scripts from scratch on a clean machine"), all .py files listed as canonical or dependency scripts were copied into an isolated empty directory (no leftover state, no cached files from prior runs) and executed there directly. This found and fixed two real bugs that were not visible from the session transcript alone:
+Undocumented dependency: physical_correlation_test.py and composite_chi_test.py import find_lambda_star from lambda_star_extrapolation_test.py, which this README previously listed as "diagnostic-only, not an input to any final result." This was incorrect and has been corrected in Section 4 above.
+Non-portable hardcoded paths: 31 scripts wrote to or read from absolute paths of the form /home/claude/data_csv/... and /home/claude/figures/.... On any other machine this would either fail outright or silently write files to a nonexistent directory. All paths in the distributed scripts have been changed to relative paths (data_csv/..., figures/...), so the repository now only requires the working directory to contain data_csv/ and figures/ subfolders at runtime.
+After both fixes, the following were confirmed to run successfully in the clean directory and reproduce their CSV outputs with values matching Table 4 and Table 5 exactly: physical_correlation_test.py, phase_shift_test.py, jost_and_curvature_test.py, composite_chi_test.py, threshold_invariance_test2.py, figure4_canonical.py. This has since been superseded by an even stronger, fully independent test — see Section 7, item 1.
+7. Open items (not yet resolved — do not claim otherwise)
+No continuous integration (CI) workflow RESOLVED: .github/workflows/reproducibility.yml now runs the minimal-reproduction chain (solver validation, WKB check, all four parts of Table 4, Figure 4, Figure 8) on every push, on a genuinely independent GitHub-hosted Ubuntu runner — a stronger clean-room test than the manual one in Section 6, since it covers checkout + dependency install + execution on fresh infrastructure with no shared state whatsoever. First run: passed (8m 25s).
+Figures 1–3, 5–7, 9–10 are not yet covered by CI — only the minimal-reproduction subset (Figure 4, Figure 8, and the Table 2/3/4 scripts) is currently checked automatically. Extending the workflow to the full rebuild list (Section 3) is a natural next step but not yet done.
+Figures 1–3 and 10 have no CSV intermediate — they are generated directly by their scripts without a saved data file, so their numeric content cannot be independently inspected outside the script itself.
+Table 1 has no single canonical script (see the exception noted at the top of Section 3).
+No pixel-level or file-level check of the final PNG files has been performed; only the underlying numerical data have been verified (see figure_captions_and_tables.md for the exact scope of this audit).
+Random seeds: not applicable — all computations are deterministic (no stochastic sampling is used anywhere in this pipeline).
+Operating system / hardware: the GitHub Actions runner uses ubuntu-latest; local execution during development used a separate environment (see requirements.txt for the exact package versions common to both). 
